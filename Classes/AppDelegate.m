@@ -74,7 +74,7 @@
     detailViewController.passwordItem = wrapper;
     [wrapper release];
     
-	wrapper = [[KeychainItemWrapper alloc] initWithIdentifier:@"Account Number" accessGroup:@"YOUR_APP_ID_HERE.com.yourcompany.GenericKeychainSuite"];
+	wrapper = [[KeychainItemWrapper alloc] initWithIdentifier:@"Account Number" accessGroup:@"Hubcape.com.beepscore.GenericKeychainSuite"];
     self.accountNumberItem = wrapper;
     detailViewController.accountNumberItem = wrapper;
     [wrapper release];

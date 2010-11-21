@@ -4,8 +4,8 @@
 <dict>
 	<key>keychain-access-groups</key>
 	<array>
-		<string>YOUR_APP_ID_HERE.com.yourcompany.GenericKeychain2</string>
-		<string>YOUR_APP_ID_HERE.com.yourcompany.GenericKeychainSuite</string>
+		<string>Hubcape.com.beepscore.GenericKeychain2</string>
+		<string>Hubcape.com.beepscore.GenericKeychainSuite</string>
 	</array>
 </dict>
 </plist>
