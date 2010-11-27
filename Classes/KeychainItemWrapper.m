@@ -1,57 +1,56 @@
 /*
-     File: KeychainItemWrapper.m 
+ File: KeychainItemWrapper.m
  Abstract: 
  Objective-C wrapper for accessing a single keychain item.
-  
-  Version: 1.2 
-  
- Disclaimer: IMPORTANT:  This Apple software is supplied to you by Apple 
- Inc. ("Apple") in consideration of your agreement to the following 
- terms, and your use, installation, modification or redistribution of 
- this Apple software constitutes acceptance of these terms.  If you do 
- not agree with these terms, please do not use, install, modify or 
- redistribute this Apple software. 
-  
- In consideration of your agreement to abide by the following terms, and 
- subject to these terms, Apple grants you a personal, non-exclusive 
- license, under Apple's copyrights in this original Apple software (the 
- "Apple Software"), to use, reproduce, modify and redistribute the Apple 
- Software, with or without modifications, in source and/or binary forms; 
- provided that if you redistribute the Apple Software in its entirety and 
- without modifications, you must retain this notice and the following 
- text and disclaimers in all such redistributions of the Apple Software. 
- Neither the name, trademarks, service marks or logos of Apple Inc. may 
- be used to endorse or promote products derived from the Apple Software 
- without specific prior written permission from Apple.  Except as 
- expressly stated in this notice, no other rights or licenses, express or 
- implied, are granted by Apple herein, including but not limited to any 
- patent rights that may be infringed by your derivative works or by other 
- works in which the Apple Software may be incorporated. 
-  
- The Apple Software is provided by Apple on an "AS IS" basis.  APPLE 
- MAKES NO WARRANTIES, EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION 
- THE IMPLIED WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY AND FITNESS 
- FOR A PARTICULAR PURPOSE, REGARDING THE APPLE SOFTWARE OR ITS USE AND 
- OPERATION ALONE OR IN COMBINATION WITH YOUR PRODUCTS. 
-  
- IN NO EVENT SHALL APPLE BE LIABLE FOR ANY SPECIAL, INDIRECT, INCIDENTAL 
- OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- INTERRUPTION) ARISING IN ANY WAY OUT OF THE USE, REPRODUCTION, 
- MODIFICATION AND/OR DISTRIBUTION OF THE APPLE SOFTWARE, HOWEVER CAUSED 
- AND WHETHER UNDER THEORY OF CONTRACT, TORT (INCLUDING NEGLIGENCE), 
- STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE 
- POSSIBILITY OF SUCH DAMAGE. 
-  
- Copyright (C) 2010 Apple Inc. All Rights Reserved. 
-  
-*/ 
+ 
+ Version: 1.2
+ 
+ Disclaimer: IMPORTANT:  This Apple software is supplied to you by Apple
+ Inc. ("Apple") in consideration of your agreement to the following
+ terms, and your use, installation, modification or redistribution of
+ this Apple software constitutes acceptance of these terms.  If you do
+ not agree with these terms, please do not use, install, modify or
+ redistribute this Apple software.
+ 
+ In consideration of your agreement to abide by the following terms, and
+ subject to these terms, Apple grants you a personal, non-exclusive
+ license, under Apple's copyrights in this original Apple software (the
+ "Apple Software"), to use, reproduce, modify and redistribute the Apple
+ Software, with or without modifications, in source and/or binary forms;
+ provided that if you redistribute the Apple Software in its entirety and
+ without modifications, you must retain this notice and the following
+ text and disclaimers in all such redistributions of the Apple Software.
+ Neither the name, trademarks, service marks or logos of Apple Inc. may
+ be used to endorse or promote products derived from the Apple Software
+ without specific prior written permission from Apple.  Except as
+ expressly stated in this notice, no other rights or licenses, express or
+ implied, are granted by Apple herein, including but not limited to any
+ patent rights that may be infringed by your derivative works or by other
+ works in which the Apple Software may be incorporated.
+ 
+ The Apple Software is provided by Apple on an "AS IS" basis.  APPLE
+ MAKES NO WARRANTIES, EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION
+ THE IMPLIED WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY AND FITNESS
+ FOR A PARTICULAR PURPOSE, REGARDING THE APPLE SOFTWARE OR ITS USE AND
+ OPERATION ALONE OR IN COMBINATION WITH YOUR PRODUCTS.
+ 
+ IN NO EVENT SHALL APPLE BE LIABLE FOR ANY SPECIAL, INDIRECT, INCIDENTAL
+ OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ INTERRUPTION) ARISING IN ANY WAY OUT OF THE USE, REPRODUCTION,
+ MODIFICATION AND/OR DISTRIBUTION OF THE APPLE SOFTWARE, HOWEVER CAUSED
+ AND WHETHER UNDER THEORY OF CONTRACT, TORT (INCLUDING NEGLIGENCE),
+ STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
+ POSSIBILITY OF SUCH DAMAGE.
+ 
+ Copyright (C) 2010 Apple Inc. All Rights Reserved.
+ 
+ */
 
 #import "KeychainItemWrapper.h"
 #import <Security/Security.h>
 
 /*
-
 These are the default constants and their respective types,
 available for the kSecClassGenericPassword Keychain Item class:
 
@@ -70,7 +69,6 @@ kSecAttrService				-		CFStringRef
 kSecAttrGeneric				-		CFDataRef
  
 See the header file Security/SecItem.h for more details.
-
 */
 
 @interface KeychainItemWrapper (PrivateMethods)
@@ -135,7 +133,7 @@ Keychain API expects as a validly constructed container class.
             [self resetKeychainItem];
 			
 			// Add the generic attribute and the keychain access group.
-			[keychainItemData setObject:identifier forKey:(id)kSecAttrGeneric];
+			[self.keychainItemData setObject:identifier forKey:(id)kSecAttrGeneric];
 			if (accessGroup != nil)
 			{
 #if TARGET_IPHONE_SIMULATOR
@@ -148,7 +146,7 @@ Keychain API expects as a validly constructed container class.
 				// If a SecItem contains an access group attribute, SecItemAdd and SecItemUpdate on the
 				// simulator will return -25243 (errSecNoAccessForItem).
 #else			
-				[keychainItemData setObject:accessGroup forKey:(id)kSecAttrAccessGroup];
+				[self.keychainItemData setObject:accessGroup forKey:(id)kSecAttrAccessGroup];
 #endif
 			}
 		}
@@ -175,42 +173,42 @@ Keychain API expects as a validly constructed container class.
 - (void)setObject:(id)inObject forKey:(id)key 
 {
     if (inObject == nil) return;
-    id currentObject = [keychainItemData objectForKey:key];
+    id currentObject = [self.keychainItemData objectForKey:key];
     if (![currentObject isEqual:inObject])
     {
-        [keychainItemData setObject:inObject forKey:key];
+        [self.keychainItemData setObject:inObject forKey:key];
         [self writeToKeychain];
     }
 }
 
 - (id)objectForKey:(id)key
 {
-    return [keychainItemData objectForKey:key];
+    return [self.keychainItemData objectForKey:key];
 }
 
 - (void)resetKeychainItem
 {
 	OSStatus junk = noErr;
-    if (!keychainItemData) 
+    if (!self.keychainItemData) 
     {
         NSMutableDictionary *tempKeychainItemData = [[NSMutableDictionary alloc] init];
         self.keychainItemData = tempKeychainItemData;
         [tempKeychainItemData release];
     }
-    else if (keychainItemData)
+    else
     {
-        NSMutableDictionary *tempDictionary = [self dictionaryToSecItemFormat:keychainItemData];
+        NSMutableDictionary *tempDictionary = [self dictionaryToSecItemFormat:self.keychainItemData];
 		junk = SecItemDelete((CFDictionaryRef)tempDictionary);
         NSAssert( junk == noErr || junk == errSecItemNotFound, @"Problem deleting current dictionary." );
     }
     
     // Default attributes for keychain item.
-    [keychainItemData setObject:@"" forKey:(id)kSecAttrAccount];
-    [keychainItemData setObject:@"" forKey:(id)kSecAttrLabel];
-    [keychainItemData setObject:@"" forKey:(id)kSecAttrDescription];
+    [self.keychainItemData setObject:@"" forKey:(id)kSecAttrAccount];
+    [self.keychainItemData setObject:@"" forKey:(id)kSecAttrLabel];
+    [self.keychainItemData setObject:@"" forKey:(id)kSecAttrDescription];
     
 	// Default data for keychain item.
-    [keychainItemData setObject:@"" forKey:(id)kSecValueData];
+    [self.keychainItemData setObject:@"" forKey:(id)kSecValueData];
 }
 
 - (NSMutableDictionary *)dictionaryToSecItemFormat:(NSDictionary *)dictionaryToConvert
@@ -281,7 +279,7 @@ Keychain API expects as a validly constructed container class.
         [updateItem setObject:[genericPasswordQuery objectForKey:(id)kSecClass] forKey:(id)kSecClass];
         
         // Lastly, we need to set up the updated attribute list being careful to remove the class.
-        NSMutableDictionary *tempCheck = [self dictionaryToSecItemFormat:keychainItemData];
+        NSMutableDictionary *tempCheck = [self dictionaryToSecItemFormat:self.keychainItemData];
         [tempCheck removeObjectForKey:(id)kSecClass];
 		
 #if TARGET_IPHONE_SIMULATOR
@@ -307,7 +305,7 @@ Keychain API expects as a validly constructed container class.
     else
     {
         // No previous item found; add the new one.
-        result = SecItemAdd((CFDictionaryRef)[self dictionaryToSecItemFormat:keychainItemData], NULL);
+        result = SecItemAdd((CFDictionaryRef)[self dictionaryToSecItemFormat:self.keychainItemData], NULL);
 		NSAssert( result == noErr, @"Couldn't add the Keychain Item." );
     }
 }
