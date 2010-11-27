@@ -193,7 +193,9 @@ Keychain API expects as a validly constructed container class.
 	OSStatus junk = noErr;
     if (!keychainItemData) 
     {
-        self.keychainItemData = [[NSMutableDictionary alloc] init];
+        NSMutableDictionary *tempKeychainItemData = [[NSMutableDictionary alloc] init];
+        self.keychainItemData = tempKeychainItemData;
+        [tempKeychainItemData release];
     }
     else if (keychainItemData)
     {
